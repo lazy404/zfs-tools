@@ -31,7 +31,7 @@ case "$1" in
         grep -q /usr/bin/zfs-shell /etc/shells || {
             echo /usr/bin/zfs-shell >> /etc/shells
         }
-        chmod 440 /etc/sudoers.d/zfs
+        chmod 440 /etc/sudoers.d/zfs-tools
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
