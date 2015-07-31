@@ -122,7 +122,7 @@ if opts.verbose:
 	receive_opts.append("-v")
 
 if opts.dedup:
-    send_opts.appedn('-D')
+    send_opts.append('-D')
 
 verbose_stderr("=================================")
 for op,src,dst,srcs,dsts in optimized_operation_schedule:
