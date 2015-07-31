@@ -1,3 +1,9 @@
+zfs-tools (0.4.2) raring; urgency=low
+
+  * Merge misc forks and pkg changes
+
+ -- Lazy404 <lazy404@gmail.com>  Fri, 31 Jul 2015 11:04:15 +0200
+
 zfs-tools (0.4.1ubuntu1) raring; urgency=low
 
   * fix indentation bug causing multiple syncs in parallel
