@@ -4,14 +4,16 @@ Tree models for the ZFS tools
 
 from collections import OrderedDict
 
-class Dataset:
+class Dataset(object):
     name = None
     children = None
+    _properties = None
     parent = None
     invalidated = False
     def __init__(self, name, parent=None):
         self.name = name
         self.children = []
+        self._properties = {}
         if parent:
             self.parent = parent
             self.parent.add_child(self)
@@ -89,8 +91,8 @@ class Dataset:
         return "<Dataset:  %s>" % self.get_path()
     __repr__ = __str__
 
-    def get_creation(self):
-        return self._creation
+    def get_property(self,name):
+        return self._properties[ name ]
 
 
 class Pool(Dataset):
@@ -139,10 +141,15 @@ class PoolSet:  # maybe rewrite this as a dataset or something?
 
         return dset
 
-    def parse_zfs_r_output(self, creationtimes):
+    def parse_zfs_r_output(self, creationtimes, properties):
+        def extract_properties( line ):
+            items = s.strip().split( '\t' )
+            assert len( items ) == (1 + len( properties ) )
+            propvalues = map( lambda x: None if x == '-' else x, items[ 1: ] )
+            return [ items[ 0 ], zip( properties, propvalues ) ]
 
         # make into array
-        creations = OrderedDict([ s.strip().split("\t") for s in creationtimes.splitlines() if s.strip() ])
+        creations = OrderedDict([ extract_properties( s ) for s in creationtimes.splitlines() if s.strip() ])
 
         # names of pools
         old_dsets = [ x.get_path() for x in self.walk() ]
@@ -170,7 +177,7 @@ class PoolSet:  # maybe rewrite this as a dataset or something?
                 if snapshot not in [ x.name for x in fs.children ]:
                     fs = Snapshot(snapshot, fs)
 
-            fs._creation = creations[fs.get_path()]
+            fs._properties.update( creations[fs.get_path()] )
 
         for dset in old_dsets:
             if dset not in new_dsets:
